@@ -505,7 +505,7 @@ public:
             fileName[j] = '\0';
         strcat(fileName, "_compressed.bin");
         writeToFile(fileName, char_ans, char_count);
-        cout << "\n\tFile Compressed Succesfully\n\tFile Name: " << fileName << endl;
+        cout << "\n\tFile Compressed Succesfully\n\tFile Path: " << fileName << endl;
         cout << "\tText compressed by: " << 100 - ((double)char_count * 100 / initial_size) << "%\n";
     }
 };
@@ -527,19 +527,35 @@ int main()
     {
         cout << "\n\t**==Welcome to iCompresser==**\n";
         cout << "\tPress '1' to compress your file\n\tPress '2' to decompress your file\n\tPress '3' to exit...\n\n\t";
-        cin >> ch;
+        if (!(cin >> ch))
+        {
+            // Non-numeric input put cin into a fail state. Recover so the
+            // loop does not spin forever printing "Invalid Choice".
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid Choice\n";
+            continue;
+        }
+        // Discard the rest of the line (spaces, leftover chars)
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
         char fileName[100];
+        string fileNameStr;
         switch (ch)
         {
         case 1:
-            cout << "\tEnter your file name to compress: ";
-            cin >> fileName;
+            cout << "\tEnter your file path or file name to compress: ";
+            getline(cin, fileNameStr);
+            strncpy(fileName, fileNameStr.c_str(), sizeof(fileName) - 1);
+            fileName[sizeof(fileName) - 1] = '\0';
             f.compress(fileName);
             d.levelTwoMainC(fileName);
             break;
         case 2:
-            cout << "\tEnter your file name to decompress: ";
-            cin >> fileName;
+            cout << "\tEnter your file path or file name to decompress: ";
+            getline(cin, fileNameStr);
+         strncpy(fileName, fileNameStr.c_str(), sizeof(fileName) - 1);
+            fileName[sizeof(fileName) - 1] = '\0';
             d1.levelTwoMainD(fileName);
             fd.decompressor(fileName);
             break;
